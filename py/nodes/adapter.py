@@ -1,3 +1,4 @@
+import os
 import re
 import torch
 import folder_paths
@@ -470,12 +471,15 @@ class ipadapter:
                     CLIP_PATH = os.path.join(folder_paths.models_dir, "clip_vision", "google--siglip-so400m-patch14-384")
                     print("CLIP_VISION not found locally. Downloading google/siglip-so400m-patch14-384...")
                     try:
+                        # Get token from environment variables (HF_TOKEN or HUGGINGFACE_HUB_TOKEN)
+                        hf_token = os.environ.get("HF_TOKEN") or os.environ.get("HUGGINGFACE_HUB_TOKEN")
                         snapshot_download(
                             repo_id="google/siglip-so400m-patch14-384",
                             local_dir=os.path.join(folder_paths.models_dir, "clip_vision",
                                                    "cache--google--siglip-so400m-patch14-384"),
                             local_dir_use_symlinks=False,
-                            resume_download=True
+                            resume_download=True,
+                            token=hf_token
                         )
                         shutil.move(os.path.join(folder_paths.models_dir, "clip_vision",
                                                  "cache--google--siglip-so400m-patch14-384"), CLIP_PATH)

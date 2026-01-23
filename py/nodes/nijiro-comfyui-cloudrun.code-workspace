@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"path": "../../../nijiro-comfyui-cloudrun"
+		},
+		{
+			"path": "../../../nijiro-comfyui-falflux-custom_nodes"
+		},
+		{
+			"path": "../../../ComfyUI"
+		},
+		{
+			"path": "../.."
+		},
+		{
+			"path": "../../../ComfyUI_HuggingFace_Downloader"
+		}
+	],
+	"settings": {}
+}

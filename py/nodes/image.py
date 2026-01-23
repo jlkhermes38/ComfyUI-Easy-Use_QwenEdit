@@ -866,7 +866,9 @@ class imageRemBg:
         model_path = os.path.join(REMBG_DIR, 'RMBG-2.0')
         if not os.path.exists(model_path):
           from huggingface_hub import snapshot_download
-          snapshot_download(repo_id=repo_id, local_dir=model_path, ignore_patterns=["*.md", "*.txt"])
+          # Get token from environment variables (HF_TOKEN or HUGGINGFACE_HUB_TOKEN)
+          hf_token = os.environ.get("HF_TOKEN") or os.environ.get("HUGGINGFACE_HUB_TOKEN")
+          snapshot_download(repo_id=repo_id, local_dir=model_path, ignore_patterns=["*.md", "*.txt"], token=hf_token)
         from transformers import AutoModelForImageSegmentation
         model = AutoModelForImageSegmentation.from_pretrained(model_path, trust_remote_code=True)
         torch.set_float32_matmul_precision('high')
@@ -1453,11 +1455,14 @@ class humanSegmentation:
             PromptServer.instance.send_sync("easyuse-toast", {"content": f"Model not found locally. Downloading {method}...", "type": 'loading', "duration": 10000})
             print(f"Model not found locally. Downloading {method}...")
             model_path_cache = os.path.join(folder_paths.models_dir, "cache-"+method)
+            # Get token from environment variables (HF_TOKEN or HUGGINGFACE_HUB_TOKEN)
+            hf_token = os.environ.get("HF_TOKEN") or os.environ.get("HUGGINGFACE_HUB_TOKEN")
             snapshot_download(
               repo_id=HUMANPARSING_MODELS[method]['model_name'],
               local_dir=model_path_cache,
               local_dir_use_symlinks=False,
-              resume_download=True
+              resume_download=True,
+              token=hf_token
             )
             shutil.move(model_path_cache, model_folder_path)
             print(f"Model downloaded to {model_folder_path}...")
@@ -1466,7 +1471,7 @@ class humanSegmentation:
           except:
             pass
 
-          processor = SegformerImageProcessor.from_pretrained(model_folder_path)
+          processor = SegformerImageProcessor.from_pretrained(model_folder_path, use_fast=True)
           model = AutoModelForSemanticSegmentation.from_pretrained(model_folder_path)
           update_cache(method, 'human_segmentation', (False, (processor, model)))
 
